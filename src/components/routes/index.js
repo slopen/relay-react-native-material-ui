@@ -32,7 +32,6 @@ const Master = (props) => (
 	</View>
 );
 
-
 export default (
 	<StackRoute
 		path="master"

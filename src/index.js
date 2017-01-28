@@ -5,10 +5,15 @@ import {
   nativeHistory
 } from 'react-router-native';
 
+import {ThemeProvider} from 'react-native-material-ui';
+
 import routes from './components/routes';
+import uiTheme from './theme';
 
 
 export default () =>
-	<Router history={nativeHistory}>
-		{routes}
-	</Router>
+    <ThemeProvider uiTheme={uiTheme}>
+    	<Router history={nativeHistory}>
+    		{routes}
+    	</Router>
+    </ThemeProvider>

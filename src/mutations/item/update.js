@@ -32,23 +32,23 @@ export default class UpdateItemMutation extends Relay.Mutation {
     }
 
     getVariables () {
-        const {item, name, content} = this.props;
+        const {item: {id}, name, content} = this.props;
 
         return {
-            id: item.id,
-            name: name,
-            content: content
+            id,
+            name,
+            content
         };
     }
 
     getOptimisticResponse () {
-        const {item, name, content} = this.props;
+        const {item: {id}, name, content} = this.props;
 
         return {
             item: {
-                id: item.id,
-                name: name,
-                content: content
+                id,
+                name,
+                content
             }
         };
     }

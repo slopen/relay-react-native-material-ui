@@ -48,7 +48,7 @@ export default class List extends Component {
 
 		const {pageInfo} = this.getItems ();
 
-		if (pageInfo.hasNextPage && distance <  100) {
+		if (pageInfo.hasNextPage && distance < 100) {
 			this.requestNext ();
 		}
 	}

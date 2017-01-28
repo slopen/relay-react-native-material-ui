@@ -72,7 +72,6 @@ class ItemPreview extends Component {
 		super (props);
 
 		this.state = {name, content, tags};
-		this.done = true;
 	}
 
 	onTagAdd = (id) => {
