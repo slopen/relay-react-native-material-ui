@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import Relay from 'react-relay';
 
 import {
@@ -26,10 +26,11 @@ import RelayStore from '../../../store';
 import ItemRemoveMutation from '../../../mutations/item/remove';
 import ItemCreateMutation from '../../../mutations/item/create';
 
+import {Button} from 'react-native-material-ui';
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create ({
 	container: {
-		padding: 3
+		// backgroundColor: '#FFF'
 	},
 	loader: {
 		flex: 1,
@@ -39,8 +40,23 @@ const styles = StyleSheet.create({
 	}
 });
 
+const buttonStyle = {
+	container: {
+		height: 60,
+		marginHorizontal: 8,
+		marginVertical: 6
+	},
+	text: {
+		fontSize: 20
+	}
+};
+
 
 class ItemsListComponent extends ScrollableList {
+
+	static contextTypes = {
+    	uiTheme: PropTypes.object.isRequired
+	}
 
 	getItems = () => this.props.viewer.items
 
@@ -82,52 +98,47 @@ class ItemsListComponent extends ScrollableList {
 			onScroll
 		} = this;
 
-
 		return (
-			<View>
-				<ScrollView
-					onScroll={onScroll}
-					automaticallyAdjustContentInsets={false}
-					scrollEventThrottle={250}
-					style={styles.container}>
+			<ScrollView
+				onScroll={onScroll}
+				automaticallyAdjustContentInsets={false}
+				scrollEventThrottle={250}
+				style={styles.container}>
 
-					<TouchableOpacity
+                <View>
+                    <Button
+                    	raised
+                    	primary
 						onPress={onItemAdd}
-						style={{
-							alignItems: 'center',
-							backgroundColor: '#337ab7',
-							borderColor: '#337ab7',
-							padding: 20
-						}}>
-						<Text style={{
-							fontSize: 20,
-							color: '#FFF'
-						}}>ADD</Text>
-					</TouchableOpacity>
+						style={buttonStyle}
+                    	icon="add"
+                    	text="ADD"/>
+                </View>
 
-					{items.edges.map (({node}) => (
-						<ItemPreview
-							item={node}
-							onNavigate={onItemNavigate}
-							onRemove={onItemRemove}
-							key={node.id}/>
-					))}
+				{items.edges.map (({node}) => (
+					<ItemPreview
+						item={node}
+						onNavigate={onItemNavigate}
+						onRemove={onItemRemove}
+						key={node.id}/>
+				))}
 
-					{this.state.loading ? (
-						<View style={styles.loader}>
-							<ActivityIndicator/>
-						</View>
-					) : null}
+				{this.state.loading ? (
+					<View style={styles.loader}>
+						<ActivityIndicator/>
+					</View>
+				) : null}
 
-				</ScrollView>
-			</View>
-		);
+			</ScrollView>
+	);
 	}
 }
+
 
 const ItemsList = withRouter ((props) =>
 	<ItemsListComponent {...props}/>
 );
+
 
 export default createRenderer (ItemsList, {
 

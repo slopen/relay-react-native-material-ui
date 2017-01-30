@@ -2,41 +2,57 @@ import React from 'react';
 import Relay from 'react-relay';
 
 import {
-	TouchableOpacity,
-	Text,
+	StyleSheet,
 	View,
-	StyleSheet
+	Text,
+	TouchableOpacity
 } from 'react-native';
 
 
-const styles = StyleSheet.create({
-	tag: {
-		borderWidth: 0.5,
-		borderColor: '#d6d7da',
-		padding: 20,
-		backgroundColor: '#FFF'
+const styles = StyleSheet.create ({
+	container: {
+		height: 70
+	},
+	primaryText: {
+		fontSize: 20
+	},
+	closeContainer: {
+		justifyContent: 'center',
+		marginRight: -20,
+		padding: 25,
+		paddingLeft: 30,
+		paddingRight: 30,
+		backgroundColor: '#F7F7F7'
+	},
+	close: {
+		color: 'red',
+		fontSize: 20
 	}
 })
 
 
+import {Button, Card, ListItem} from 'react-native-material-ui';
+
+
 const TagPreview = ((props) => {
-	const {tag} = props;
+	const {tag: item} = props;
 
 	return (
-		<TouchableOpacity
-			underlayColor="transparent"
-			onPress={() => props.onNavigate (tag.id)}>
+		<Card
+			onPress={() => props.onNavigate (item.id)}>
 
-			<View style={styles.tag}>
-
-				<Text style={{
-					fontSize: 20
-				}}>{tag.name}</Text>
-			</View>
-
-		</TouchableOpacity>
+			<ListItem
+				centerElement={{
+					primaryText: item.name
+				}}
+				style={{
+					container: styles.container,
+					primaryText: styles.primaryText
+				}}/>
+		</Card>
 	);
 });
+
 
 export default Relay.createContainer (TagPreview, {
 

@@ -13,8 +13,7 @@ export default {
     },
 
     palette: {
-        primaryColor: COLOR.blue500,
-        accentColor: COLOR.red500,
+        primaryColor: COLOR.blue500
     },
 
     typography: {

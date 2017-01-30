@@ -32,21 +32,19 @@ class TagsListComponent extends ScrollableList {
 		} = this;
 
 		return (
-			<View>
-				<ScrollView
-					automaticallyAdjustContentInsets={false}
-					onScroll={onScroll}
-					scrollEventThrottle={250}>
+			<ScrollView
+				automaticallyAdjustContentInsets={false}
+				onScroll={onScroll}
+				scrollEventThrottle={250}>
 
-					{tags.edges.map (({node}) => (
-						<TagPreview
-							tag={node}
-							onNavigate={onItemNavigate}
-							key={node.id}/>
-					))}
+				{tags.edges.map (({node}) => (
+					<TagPreview
+						tag={node}
+						onNavigate={onItemNavigate}
+						key={node.id}/>
+				))}
 
-				</ScrollView>
-			</View>
+			</ScrollView>
 		);
 	}
 }

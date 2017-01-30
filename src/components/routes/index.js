@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 
 import {
 	Route,
@@ -17,20 +17,19 @@ import Item from '../content/item/full';
 import Tag from '../content/tag/full';
 import TagsList from '../content/tag/list';
 
-
-const styles = StyleSheet.create ({
-	component: {
-		backgroundColor: '#FFFFFF',
-		flex: 1
-	}
-});
+import {ThemeProvider} from 'react-native-material-ui';
+import uiTheme from '../../theme';
 
 
-const Master = (props) => (
-	<View style={styles.component}>
-		{props.children}
-	</View>
-);
+
+const Master = (props) => {
+	return (
+        <ThemeProvider uiTheme={uiTheme}>
+			{props.children}
+        </ThemeProvider>
+	);
+};
+
 
 export default (
 	<StackRoute

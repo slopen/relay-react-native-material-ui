@@ -12,7 +12,8 @@ import {
 	StyleSheet,
 	Picker,
 	ScrollView,
-	TouchableHighlight
+	TouchableHighlight,
+	Dimensions
 } from 'react-native';
 
 
@@ -27,6 +28,8 @@ import UpdateItemMutation from '../../../mutations/item/update';
 import LinkMutation from '../../../mutations/link';
 import UnlinkMutation from '../../../mutations/unlink';
 
+import {Card, Button, Dialog, DialogDefaultActions} from 'react-native-material-ui';
+
 const styles = StyleSheet.create ({
 	container: {
 		padding: 3
@@ -36,32 +39,110 @@ const styles = StyleSheet.create ({
 		paddingLeft: 10,
 		paddingBottom: 40,
 		fontSize: 30,
-		fontWeight: 'bold',
-		backgroundColor: '#FFF',
-		borderBottomColor: '#DDD',
-		borderBottomWidth: 1
+		fontWeight: 'bold'
 	},
 	input: {
 		height: 70,
 		fontSize: 20,
 		color: '#777',
-		padding: 20,
-		backgroundColor: '#FFF',
-		borderBottomColor: '#DDD',
-		borderBottomWidth: 1
+		padding: 20
 	},
-	picker: {
-		height: 70,
-		padding: 20,
-		backgroundColor: '#FFF',
-		borderColor: '#DDD',
-		borderWidth: 1
+	controls: {
+		flex: 1,
+		flexDirection: 'row',
+		marginTop: 12,
+	},
+	dialog: {
+        flex: 1,
+        top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+        position: 'absolute',
+        zIndex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
 	}
 })
 
+const buttonStyle = {
+	container: {
+		flex: 0.5,
+		height: 60,
+		margin: 8
+	},
+	text: {
+		fontSize: 20
+	}
+};
+
+
 const limit = 20;
 
-const Item = Picker.Item;
+
+const availableTags = (tags, selected) =>
+	tags.edges.filter (
+		({node: tag}) => !selected.edges.find (
+			({node}) => node.id === tag.id
+		)
+	)
+
+class AddTagDialog extends Component {
+	constructor (props) {
+		super (props);
+
+		this.state = {};
+	}
+
+	dismiss () {
+		this.props.onDismiss ();
+	}
+
+	add () {
+		const {tags, item} = this.props;
+		const options = availableTags (tags, item.tags);
+
+		this.props.onAdd (
+			this.state.selected || options [0].node.id
+		);
+	}
+
+	render () {
+		const {item, tags, open} = this.props;
+		const {selected} = this.state;
+
+		const options = availableTags (tags, item.tags);
+
+		return open ? (
+			<View style={styles.dialog}>
+				<Dialog>
+					<Dialog.Title>
+						<Text>Add Tag</Text>
+					</Dialog.Title>
+					<Dialog.Content>
+						<Picker
+							selectedValue={selected}
+							onValueChange={(selected) => this.setState ({selected})}>
+
+							{options.map (({node}) => (
+								<Picker.Item
+									key={node.id}
+									label={node.name || ''}
+									value={node.id} />
+							))}
+						</Picker>
+					</Dialog.Content>
+					<Dialog.Actions>
+						<DialogDefaultActions
+							actions={['dismiss', 'add']}
+							onActionPress={(action) => this [action] ()}/>
+					</Dialog.Actions>
+				</Dialog>
+			</View>
+		) : null;
+	}
+}
+
 
 
 class ItemPreview extends Component {
@@ -71,23 +152,30 @@ class ItemPreview extends Component {
 
 		super (props);
 
-		this.state = {name, content, tags};
+		this.state = {name, content, tags, addTag: false};
+	}
+
+	onTagRemove = (tag) => {
+		const {item} = this.props.viewer;
+
+		RelayStore.commitUpdate (
+			new UnlinkMutation ({item, tag})
+		);
 	}
 
 	onTagAdd = (id) => {
 		const {item, tags} = this.props.viewer;
-		const {node} = tags.edges.find (
+		const {node: tag} = tags.edges.find (
 			({node}) => node.id === id
 		);
 
-		this.setState ({selected: id});
-
 		RelayStore.commitUpdate (
-			new LinkMutation ({
-				tag: node,
-				item: item
-			})
+			new LinkMutation ({item, tag})
 		);
+	}
+
+	onTagNavigate = (id) => {
+		this.props.router.push ('/tag/' + id);
 	}
 
 	onSave = () => {
@@ -99,90 +187,82 @@ class ItemPreview extends Component {
 		);
 	}
 
-	onNavigate = (id) => {
-		this.props.router.push ('/tag/' + id);
-	}
-
-	onTagRemove = (tag) => {
-		const {item} = this.props.viewer;
-
-		RelayStore.commitUpdate (
-			new UnlinkMutation ({
-				tag,
-				item: item
-			})
-		);
-	}
-
 	render () {
 		const {item, tags} = this.props.viewer;
 		const {tags: itemTags} = item;
 
-		const {content, name, selected} = this.state;
+		const {content, name} = this.state;
 
-		const {onNavigate, onTagRemove, onSave, onTagAdd} = this;
-
+		const {onTagRemove, onTagAdd, onTagNavigate, onSave} = this;
 
 		return (
-			<View style={styles.container}>
+            <View>
+				<ScrollView
+					automaticallyAdjustContentInsets={false}
+					scrollEventThrottle={200}>
 
-				<Text style={styles.header}>{name}</Text>
+					<Card
+						style={{
+							container: styles.container
+						}}>
 
-				<TextInput
-					underlineColorAndroid="transparent"
-					style={styles.input}
-					placeholder="item name"
-					value={name}
-					onChangeText={(name) => this.setState ({name})}/>
+						<Text style={styles.header}>{name}</Text>
 
-				<TextInput
-					underlineColorAndroid="transparent"
-					style={styles.input}
-					multiline={true}
-					numberOfLines={4}
-					placeholder="item content"
-					value={content}
-					onChangeText={(content) => this.setState ({content})}/>
+						<TextInput
+							underlineColorAndroid="transparent"
+							style={styles.input}
+							placeholder="item name"
+							value={name}
+							onChangeText={(name) => this.setState ({name})}/>
 
-				<View>
-					{itemTags.edges.map (({node}) =>
-						<TagPreview
-							onNavigate={onNavigate}
-							onRemove={onTagRemove}
-							tag={node}
-							key={node.id}/>
-					)}
-				</View>
+						<TextInput
+							underlineColorAndroid="transparent"
+							style={styles.input}
+							multiline={true}
+							numberOfLines={4}
+							placeholder="item content"
+							value={content}
+							onChangeText={(content) => this.setState ({content})}/>
 
-				<Picker
-					style={styles.picker}
-					selectedValue={selected}
-					multiple={true}
-					onValueChange={onTagAdd}>
+						{itemTags.edges.map (({node}) =>
+							<TagPreview
+								onNavigate={onTagNavigate}
+								onRemove={onTagRemove}
+								tag={node}
+								key={node.id}/>
+						)}
 
-					{tags.edges.map (({node}) => (
-						<Item
-							key={node.id}
-							label={node.name || ''}
-							value={node.id} />
-					))}
+			            <View
+			            	style={styles.controls}>
+			                <Button
+			                	raised
+			                	primary
+								onPress={() => this.setState ({
+									addTag: true
+								})}
+								style={buttonStyle}
+			                	icon="add"
+			                	text="ADD TAG"/>
 
-				</Picker>
+			                <Button
+			                	raised
+			                	primary
+								onPress={onSave}
+								style={buttonStyle}
+			                	icon="save"
+			                	text="SAVE"/>
+			            </View>
+					</Card>
+				</ScrollView>
 
-
-				<TouchableHighlight
-					onPress={onSave}
-					style={{
-						alignItems: 'center',
-						backgroundColor: '#337ab7',
-						borderColor: '#337ab7',
-						padding: 20
-					}}>
-					<Text style={{
-						fontSize: 20,
-						color: '#FFF'
-					}}>SAVE</Text>
-				</TouchableHighlight>
+				<AddTagDialog
+					item={item}
+					tags={tags}
+					open={this.state.addTag}
+					onAdd={onTagAdd}
+					onDismiss={() => this.setState ({
+						addTag: false
+					})}/>
 
 			</View>
 		);
@@ -191,13 +271,7 @@ class ItemPreview extends Component {
 }
 
 const ItemView = withRouter ((props) =>
-	<ScrollView
-		automaticallyAdjustContentInsets={false}
-		scrollEventThrottle={200}>
-
-		<ItemPreview {...props}/>
-
-	</ScrollView>
+	<ItemPreview {...props}/>
 );
 
 export default createRenderer (ItemView, {

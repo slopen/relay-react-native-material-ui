@@ -2,59 +2,65 @@ import React from 'react';
 import Relay from 'react-relay';
 
 import {
-	TouchableOpacity,
-	Text,
+	StyleSheet,
 	View,
-	StyleSheet
+	Text,
+	TouchableOpacity
 } from 'react-native';
 
 
-const styles = StyleSheet.create({
-	tag: {
-		borderWidth: 0.5,
-		borderColor: '#d6d7da',
-		padding: 20,
-		backgroundColor: '#FFF',
-		position: 'relative'
+const styles = StyleSheet.create ({
+	container: {
+		height: 70
 	},
-	close: {
+	primaryText: {
+		fontSize: 20
+	},
+	closeContainer: {
 		justifyContent: 'center',
-		position: 'absolute',
-		right: 0,
-		top: 0,
-		padding: 20,
+		marginRight: -20,
+		padding: 25,
 		paddingLeft: 30,
 		paddingRight: 30,
 		backgroundColor: '#F7F7F7'
+	},
+	close: {
+		color: 'red',
+		fontSize: 20
 	}
 })
 
 
-const TagPreview =  ((props) => {
-	const {tag} = props;
+import {Button, Card, ListItem} from 'react-native-material-ui';
+
+const RemoveButton = ({onRemove}) =>
+	<TouchableOpacity
+		style={styles.closeContainer}
+		onPress={onRemove}>
+		<Text style={styles.close}>&times;</Text>
+	</TouchableOpacity>
+
+
+const TagPreview = ((props) => {
+	const {tag: item} = props;
 
 	return (
-		<TouchableOpacity
-			underlayColor="transparent"
-			onPress={() => props.onNavigate (tag.id)}>
+		<Card
+			onPress={() => props.onNavigate (item.id)}>
 
-			<View style={styles.tag}>
-
-				<Text style={{
-					fontSize: 20
-				}}>{tag.name}</Text>
-
-				<TouchableOpacity
-					style={styles.close}
-					onPress={() => props.onRemove (tag)}>
-					<Text style={{
-						color: 'red',
-						fontSize: 20
-					}}>&times;</Text>
-				</TouchableOpacity>
-			</View>
-
-		</TouchableOpacity>
+			<ListItem
+				centerElement={{
+					primaryText: item.name
+				}}
+				rightElement={
+					<RemoveButton
+						onRemove={() => props.onRemove (item)}/>
+				}
+				style={{
+					container: styles.container,
+					primaryText: styles.primaryText
+				}}/>
+		</Card>
 	);
 });
 

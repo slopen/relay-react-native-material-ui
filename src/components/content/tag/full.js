@@ -12,6 +12,7 @@ import {
 	ScrollView
 } from 'react-native';
 
+import {Card, Button} from 'react-native-material-ui';
 
 import ViewerQuery from '../../../queries/viewer-query';
 import {createRenderer} from '../../../lib/relay-utils';
@@ -63,21 +64,19 @@ class TagPreview extends Component {
 		const {onNavigate, onRemove} = this;
 
 		return (
-			<View style={styles.container}>
+			<Card
+				style={{container: styles.container}}>
 
 				<Text style={styles.header}>{tag.name}</Text>
 
-				<View>
-					{tagsItems.edges.map (({node}) =>
-						<ItemPreview
-							onNavigate={onNavigate}
-							onRemove={onRemove}
-							item={node}
-							key={node.id}/>
-					)}
-				</View>
-
-			</View>
+				{tagsItems.edges.map (({node}) =>
+					<ItemPreview
+						onNavigate={onNavigate}
+						onRemove={onRemove}
+						item={node}
+						key={node.id}/>
+				)}
+			</Card>
 		);
 	}
 
