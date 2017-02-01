@@ -1,14 +1,13 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
 
 import {
 	Route,
 	StackRoute
 } from 'react-router-native';
 
-import {
-	View,
-	StyleSheet
-} from 'react-native';
+import {ThemeProvider} from 'react-native-material-ui';
+
+import uiTheme from '../../theme';
 
 import AppHeader from '../content/header';
 
@@ -16,10 +15,6 @@ import ItemsList from '../content/item/list';
 import Item from '../content/item/full';
 import Tag from '../content/tag/full';
 import TagsList from '../content/tag/list';
-
-import {ThemeProvider} from 'react-native-material-ui';
-import uiTheme from '../../theme';
-
 
 
 const Master = (props) => {
@@ -29,7 +24,6 @@ const Master = (props) => {
         </ThemeProvider>
 	);
 };
-
 
 export default (
 	<StackRoute

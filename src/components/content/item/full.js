@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import Relay from 'react-relay';
 
 import {
@@ -7,13 +7,9 @@ import {
 
 import {
 	View,
-	Text,
 	TextInput,
 	StyleSheet,
-	Picker,
-	ScrollView,
-	TouchableHighlight,
-	Dimensions
+	ScrollView
 } from 'react-native';
 
 
@@ -22,25 +18,17 @@ import {createRenderer} from '../../../lib/relay-utils';
 
 import RelayStore from '../../../store';
 
-import TagPreview from '../tag/linked';
+import TagPreview from '../tag/preview';
 
 import UpdateItemMutation from '../../../mutations/item/update';
 import LinkMutation from '../../../mutations/link';
 import UnlinkMutation from '../../../mutations/unlink';
 
-import {Card, Button, Dialog, DialogDefaultActions} from 'react-native-material-ui';
+import {Card, Button, Subheader} from 'react-native-material-ui';
+
+import AddTagDialog from './dialog';
 
 const styles = StyleSheet.create ({
-	container: {
-		padding: 3
-	},
-	header: {
-		paddingTop: 40,
-		paddingLeft: 10,
-		paddingBottom: 40,
-		fontSize: 30,
-		fontWeight: 'bold'
-	},
 	input: {
 		height: 70,
 		fontSize: 20,
@@ -50,102 +38,71 @@ const styles = StyleSheet.create ({
 	controls: {
 		flex: 1,
 		flexDirection: 'row',
-		marginTop: 12,
-	},
-	dialog: {
-        flex: 1,
-        top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-        position: 'absolute',
-        zIndex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+		marginTop: 12
 	}
 })
 
-const buttonStyle = {
+styles.button = StyleSheet.create ({
 	container: {
 		flex: 0.5,
-		height: 60,
 		margin: 8
-	},
-	text: {
-		fontSize: 20
 	}
-};
+});
 
 
 const limit = 20;
 
+const InputForm = ({
+	name,
+	content,
+	onChangeName,
+	onChangeContent
+}) =>
+	<View>
+		<TextInput
+			underlineColorAndroid="transparent"
+			style={styles.input}
+			placeholder="item name"
+			value={name}
+			onChangeText={onChangeName}/>
 
-const availableTags = (tags, selected) =>
-	tags.edges.filter (
-		({node: tag}) => !selected.edges.find (
-			({node}) => node.id === tag.id
-		)
-	)
+		<TextInput
+			underlineColorAndroid="transparent"
+			style={styles.input}
+			multiline={true}
+			numberOfLines={4}
+			placeholder="item content"
+			value={content}
+			onChangeText={onChangeContent}/>
+	</View>
 
-class AddTagDialog extends Component {
-	constructor (props) {
-		super (props);
 
-		this.state = {};
-	}
+const Controls = ({onTagAdd, onSave}) =>
+	<View
+		style={styles.controls}>
+		<Button
+			raised
+			primary
+			onPress={onTagAdd}
+			style={styles.button}
+			icon="add"
+			text="ADD TAG"/>
 
-	dismiss () {
-		this.props.onDismiss ();
-	}
-
-	add () {
-		const {tags, item} = this.props;
-		const options = availableTags (tags, item.tags);
-
-		this.props.onAdd (
-			this.state.selected || options [0].node.id
-		);
-	}
-
-	render () {
-		const {item, tags, open} = this.props;
-		const {selected} = this.state;
-
-		const options = availableTags (tags, item.tags);
-
-		return open ? (
-			<View style={styles.dialog}>
-				<Dialog>
-					<Dialog.Title>
-						<Text>Add Tag</Text>
-					</Dialog.Title>
-					<Dialog.Content>
-						<Picker
-							selectedValue={selected}
-							onValueChange={(selected) => this.setState ({selected})}>
-
-							{options.map (({node}) => (
-								<Picker.Item
-									key={node.id}
-									label={node.name || ''}
-									value={node.id} />
-							))}
-						</Picker>
-					</Dialog.Content>
-					<Dialog.Actions>
-						<DialogDefaultActions
-							actions={['dismiss', 'add']}
-							onActionPress={(action) => this [action] ()}/>
-					</Dialog.Actions>
-				</Dialog>
-			</View>
-		) : null;
-	}
-}
-
+		<Button
+			raised
+			primary
+			onPress={onSave}
+			style={styles.button}
+			icon="save"
+			text="SAVE"/>
+	</View>
 
 
 class ItemPreview extends Component {
+
+	static contextTypes = {
+		uiTheme: PropTypes.object.isRequired
+	}
 
 	constructor (props) {
 		const {name, content, tags} = props.viewer.item;
@@ -196,33 +153,19 @@ class ItemPreview extends Component {
 		const {onTagRemove, onTagAdd, onTagNavigate, onSave} = this;
 
 		return (
-            <View>
+			<View>
 				<ScrollView
 					automaticallyAdjustContentInsets={false}
 					scrollEventThrottle={200}>
 
-					<Card
-						style={{
-							container: styles.container
-						}}>
+					<Card>
+						<Subheader text={name}/>
 
-						<Text style={styles.header}>{name}</Text>
-
-						<TextInput
-							underlineColorAndroid="transparent"
-							style={styles.input}
-							placeholder="item name"
-							value={name}
-							onChangeText={(name) => this.setState ({name})}/>
-
-						<TextInput
-							underlineColorAndroid="transparent"
-							style={styles.input}
-							multiline={true}
-							numberOfLines={4}
-							placeholder="item content"
-							value={content}
-							onChangeText={(content) => this.setState ({content})}/>
+						<InputForm
+							name={name}
+							content={content}
+							onChangeName={(name) => this.setState ({name})}
+							onChangeContent={(content) => this.setState ({content})}/>
 
 						{itemTags.edges.map (({node}) =>
 							<TagPreview
@@ -232,26 +175,11 @@ class ItemPreview extends Component {
 								key={node.id}/>
 						)}
 
-			            <View
-			            	style={styles.controls}>
-			                <Button
-			                	raised
-			                	primary
-								onPress={() => this.setState ({
-									addTag: true
-								})}
-								style={buttonStyle}
-			                	icon="add"
-			                	text="ADD TAG"/>
-
-			                <Button
-			                	raised
-			                	primary
-								onPress={onSave}
-								style={buttonStyle}
-			                	icon="save"
-			                	text="SAVE"/>
-			            </View>
+						<Controls
+							onSave={onSave}
+							onTagAdd={() => this.setState ({
+								addTag: true
+							})}/>
 					</Card>
 				</ScrollView>
 

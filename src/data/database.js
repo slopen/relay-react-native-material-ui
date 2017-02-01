@@ -9,9 +9,9 @@
 
 
  const CONFIG = {
- 	ITEMS: 50,
- 	TAGS: 10,
- 	TAGS_PER_ITEM: 3
+	ITEMS: 50,
+	TAGS: 10,
+	TAGS_PER_ITEM: 3
  }
 
 

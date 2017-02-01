@@ -6,39 +6,21 @@ import {
 } from 'react-router-native';
 
 import {
-	View,
-	Text,
-	StyleSheet,
 	ScrollView
 } from 'react-native';
 
-import {Card, Button} from 'react-native-material-ui';
+import {Card, Subheader} from 'react-native-material-ui';
 
 import ViewerQuery from '../../../queries/viewer-query';
 import {createRenderer} from '../../../lib/relay-utils';
 
-import ItemPreview from '../item/linked';
+import ItemPreview from '../item/preview';
 
 import RelayStore from '../../../store';
 import UnlinkMutation from '../../../mutations/unlink';
 
 
-const styles = StyleSheet.create ({
-	container: {
-		padding: 3
-	},
-	header: {
-		paddingTop: 40,
-		paddingLeft: 10,
-		paddingBottom: 40,
-		fontSize: 30,
-		fontWeight: 'bold',
-		backgroundColor: '#FFF'
-	}
-})
-
 const limit = 20;
-
 
 class TagPreview extends Component {
 
@@ -50,10 +32,7 @@ class TagPreview extends Component {
 		const {tag} = this.props.viewer;
 
 		RelayStore.commitUpdate (
-			new UnlinkMutation ({
-				tag,
-				item: item
-			})
+			new UnlinkMutation ({tag, item})
 		);
 	}
 
@@ -64,25 +43,33 @@ class TagPreview extends Component {
 		const {onNavigate, onRemove} = this;
 
 		return (
-			<Card
-				style={{container: styles.container}}>
+			<ScrollView
+				automaticallyAdjustContentInsets={false}
+				scrollEventThrottle={200}>
 
-				<Text style={styles.header}>{tag.name}</Text>
+				<Card>
+					<Subheader text={tag.name}/>
 
-				{tagsItems.edges.map (({node}) =>
-					<ItemPreview
-						onNavigate={onNavigate}
-						onRemove={onRemove}
-						item={node}
-						key={node.id}/>
-				)}
-			</Card>
+					{tagsItems.edges.map (({node}) =>
+						<ItemPreview
+							onNavigate={onNavigate}
+							onRemove={onRemove}
+							item={node}
+							key={node.id}/>
+					)}
+				</Card>
+
+			</ScrollView>
 		);
 	}
 
 }
 
-const TagView = createRenderer (TagPreview, {
+const TagView = withRouter ((props) =>
+	<TagPreview {...props}/>
+);
+
+export default createRenderer (TagView, {
 
 	queries: ViewerQuery,
 
@@ -114,12 +101,3 @@ const TagView = createRenderer (TagPreview, {
 	}
 });
 
-export default withRouter ((props) =>
-	<ScrollView
-		automaticallyAdjustContentInsets={false}
-		scrollEventThrottle={200}>
-
-		<TagView {...props}/>
-
-	</ScrollView>
-);

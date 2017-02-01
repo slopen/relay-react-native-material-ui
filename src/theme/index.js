@@ -18,6 +18,30 @@ export default {
 
     typography: {
 
+    },
+
+    subheader: {
+        container: {
+            height: 100,
+            paddingLeft: 10
+        },
+        text: {
+            fontSize: 30,
+            lineHeight: 36,
+            fontWeight: '500'
+        }
+    },
+
+    button: {
+        container: {
+            height: 60,
+            marginHorizontal: 8,
+            marginVertical: 6
+        },
+        text: {
+            color: '#FFF',
+            fontSize: 20
+        }
     }
 
 }

@@ -6,8 +6,7 @@ import {
 } from 'react-router-native';
 
 import {
-	ScrollView,
-	View
+	ScrollView
 } from 'react-native';
 
 import ViewerQuery from '../../../queries/viewer-query';

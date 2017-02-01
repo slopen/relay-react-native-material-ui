@@ -7,18 +7,16 @@ import {
 
 
 import {
-	TouchableOpacity,
-	ActivityIndicator,
 	ScrollView,
-	Text,
-	View,
-	StyleSheet
+	View
 } from 'react-native';
 
+import {Button} from 'react-native-material-ui';
 
 import ViewerQuery from '../../../queries/viewer-query';
 import {createRenderer} from '../../../lib/relay-utils';
 
+import Loader from '../loader';
 import ScrollableList  from '../list';
 import ItemPreview from './preview';
 
@@ -26,36 +24,11 @@ import RelayStore from '../../../store';
 import ItemRemoveMutation from '../../../mutations/item/remove';
 import ItemCreateMutation from '../../../mutations/item/create';
 
-import {Button} from 'react-native-material-ui';
-
-const styles = StyleSheet.create ({
-	container: {
-		// backgroundColor: '#FFF'
-	},
-	loader: {
-		flex: 1,
-		height: 40,
-		justifyContent: 'center',
-		alignItems: 'center'
-	}
-});
-
-const buttonStyle = {
-	container: {
-		height: 60,
-		marginHorizontal: 8,
-		marginVertical: 6
-	},
-	text: {
-		fontSize: 20
-	}
-};
-
 
 class ItemsListComponent extends ScrollableList {
 
 	static contextTypes = {
-    	uiTheme: PropTypes.object.isRequired
+		uiTheme: PropTypes.object.isRequired
 	}
 
 	getItems = () => this.props.viewer.items
@@ -98,22 +71,23 @@ class ItemsListComponent extends ScrollableList {
 			onScroll
 		} = this;
 
+		const {uiTheme} = this.context;
+
 		return (
 			<ScrollView
 				onScroll={onScroll}
 				automaticallyAdjustContentInsets={false}
-				scrollEventThrottle={250}
-				style={styles.container}>
+				scrollEventThrottle={250}>
 
-                <View>
-                    <Button
-                    	raised
-                    	primary
+				<View>
+					<Button
+						raised
+						primary
 						onPress={onItemAdd}
-						style={buttonStyle}
-                    	icon="add"
-                    	text="ADD"/>
-                </View>
+						style={uiTheme.button}
+						icon="add"
+						text="ADD"/>
+				</View>
 
 				{items.edges.map (({node}) => (
 					<ItemPreview
@@ -123,14 +97,11 @@ class ItemsListComponent extends ScrollableList {
 						key={node.id}/>
 				))}
 
-				{this.state.loading ? (
-					<View style={styles.loader}>
-						<ActivityIndicator/>
-					</View>
-				) : null}
+				<Loader
+					display={this.state.loading}/>
 
 			</ScrollView>
-	);
+		);
 	}
 }
 

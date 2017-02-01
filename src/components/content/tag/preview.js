@@ -1,57 +1,19 @@
 import React from 'react';
 import Relay from 'react-relay';
 
-import {
-	StyleSheet,
-	View,
-	Text,
-	TouchableOpacity
-} from 'react-native';
+import {Card} from 'react-native-material-ui';
+
+import ListItem from '../list/item';
 
 
-const styles = StyleSheet.create ({
-	container: {
-		height: 70
-	},
-	primaryText: {
-		fontSize: 20
-	},
-	closeContainer: {
-		justifyContent: 'center',
-		marginRight: -20,
-		padding: 25,
-		paddingLeft: 30,
-		paddingRight: 30,
-		backgroundColor: '#F7F7F7'
-	},
-	close: {
-		color: 'red',
-		fontSize: 20
-	}
-})
+const TagPreview = ({tag, onRemove, onNavigate}) =>
+	<Card
+		onPress={() => onNavigate (tag.id)}>
 
-
-import {Button, Card, ListItem} from 'react-native-material-ui';
-
-
-const TagPreview = ((props) => {
-	const {tag: item} = props;
-
-	return (
-		<Card
-			onPress={() => props.onNavigate (item.id)}>
-
-			<ListItem
-				centerElement={{
-					primaryText: item.name
-				}}
-				style={{
-					container: styles.container,
-					primaryText: styles.primaryText
-				}}/>
-		</Card>
-	);
-});
+		<ListItem
+			text={tag.name}
+			onRemove={onRemove ? () => onRemove (tag) : null}/>
+	</Card>
 
 
 export default Relay.createContainer (TagPreview, {
