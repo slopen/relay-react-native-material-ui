@@ -1,4 +1,4 @@
-# Relay / React Native / Graphql Connections/Mutations Boilerplate
+# Relay / React Native / Material UI / Graphql Connections/Mutations Boilerplate
 
 RANGE_ADD / RANGE_DELETE / NODE_DELETE / FIELDS_CHANGE examples
 
@@ -7,6 +7,7 @@ RANGE_ADD / RANGE_DELETE / NODE_DELETE / FIELDS_CHANGE examples
 [react-router-native](https://github.com/jmurzy/react-router-native) - react router replacement
 
 [react-relay-network-layer](https://github.com/nodkz/react-relay-network-layer) - batch Relay queries
+[react-native-material-ui](https://github.com/xotahal/react-native-material-ui) - React Native Material UI (iOS/Android)
 
 
 ## Init
@@ -14,8 +15,8 @@ RANGE_ADD / RANGE_DELETE / NODE_DELETE / FIELDS_CHANGE examples
 Check [React Native Getting Started](https://facebook.github.io/react-native/docs/getting-started.html)
 
 ```
-git clone https://github.com/slopen/relay-react-native-itemslist
-cd relay-react-native-itemslist
+git clone https://github.com/slopen/relay-react-native-material-ui
+cd relay-react-native-material-ui
 npm i
 adb reverse tcp:8081 tcp:8081
 ```
