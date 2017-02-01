@@ -14,6 +14,8 @@ RANGE_ADD / RANGE_DELETE / NODE_DELETE / FIELDS_CHANGE examples
 
 Check [React Native Getting Started](https://facebook.github.io/react-native/docs/getting-started.html)
 
+Check [React Native Vector Icons Installation](https://github.com/oblador/react-native-vector-icons#installation)
+
 ```
 git clone https://github.com/slopen/relay-react-native-material-ui
 cd relay-react-native-material-ui
