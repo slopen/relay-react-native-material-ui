@@ -26,6 +26,12 @@ const styles = StyleSheet.create ({
     }
 });
 
+styles.actions = StyleSheet.create ({
+    actionsContainer: {
+        marginBottom: 20
+    }
+});
+
 const availableTags = (tags, selected) =>
     tags.edges.filter (
         ({node: tag}) => !selected.edges.find (
@@ -78,7 +84,9 @@ export default class AddTagDialog extends Component {
                             ))}
                         </Picker>
                     </Dialog.Content>
-                    <Dialog.Actions>
+
+                    <Dialog.Actions
+                        style={styles.actions}>
                         <DialogDefaultActions
                             actions={['dismiss', 'add']}
                             onActionPress={(action) => this [action] ()}/>
